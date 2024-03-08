@@ -29,6 +29,12 @@ public:
 	// the hashmap and map it to the default value of type T. Then it will return a
 	// reference to the newly created value in the map.
 	T& operator[](const std::string& key);
+	T* find(const std::string& key)
+	{
+		const auto& hm = *this;
+		return const_cast<T*>(hm.find(key));
+	}
+
 private:
 	struct Node
 	{
@@ -47,6 +53,7 @@ private:
 	void resize_rehash();
 	void deleteLinkedList(Node* head);
 	Node* findNode(const std::string& key);
+	HashMap(const HashMap&) = delete;
 };
 
 // CONSTRUCTOR
@@ -85,6 +92,10 @@ void HashMap<T>::insert(const std::string& key, const T& value)
 	}
 	else
 	{
+		m_numElements++;
+		if (getLoadFactor() > MAX_LOAD_FACTOR)
+			resize_rehash();
+
 		size_t hashedKey = std::hash<std::string>()(key) % m_mapSize;
 		Node* insertNode = new Node;
 		insertNode->key = key;
@@ -92,7 +103,6 @@ void HashMap<T>::insert(const std::string& key, const T& value)
 
 		insertNode->next = (*m_hashmap)[hashedKey];
 		(*m_hashmap)[hashedKey] = insertNode;
-		m_numElements++;
 	}
 }
 
@@ -118,9 +128,8 @@ T& HashMap<T>::operator[](const std::string& key)
 	}
 	else
 	{
-		T defaultValue;
-		insert(key, defaultValue); // CHANGE: DEFAULT T?
-		return defaultValue;
+		insert(key, T());
+		return T();
 	}
 }
 
@@ -151,8 +160,8 @@ void HashMap<T>::resize_rehash() // resizes the array and rehashes all items
 			Node* rehashNode = new Node;
 			rehashNode->key = nodeKey;
 			rehashNode->value = nodeValue;
-			rehashNode->next = resizedHM[hashedKey];
-			resizedHM[hashedKey] = rehashNode;
+			rehashNode->next = (*resizedHM)[hashedKey];
+			(*resizedHM)[hashedKey] = rehashNode;
 
 			Node* toBeDeleted = iterPtr;
 			iterPtr = iterPtr->next;
