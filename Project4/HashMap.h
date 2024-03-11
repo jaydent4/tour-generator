@@ -22,7 +22,7 @@ public:
 	// If no association exists with the given key, return nullptr; otherwise,
 	// return a pointer to the value associated with that key. This pointer can be
 	// used to examine that value or modify it directly within the map.
-	T* find(const std::string& key);
+	T* find(const std::string& key) const;
 	// Defines the bracket operator for HashMap, so you can use your map like this:
 	// your_map["david"] = 2.99;
 	// If the key does not exist in the hashmap, this will create a new entry in
@@ -52,7 +52,7 @@ private:
 	double getLoadFactor() const;
 	void resize_rehash();
 	void deleteLinkedList(Node* head);
-	Node* findNode(const std::string& key);
+	Node* findNode(const std::string& key) const;
 	HashMap(const HashMap&) = delete;
 };
 
@@ -107,7 +107,7 @@ void HashMap<T>::insert(const std::string& key, const T& value)
 }
 
 template <typename T>
-T* HashMap<T>::find(const std::string& key)
+T* HashMap<T>::find(const std::string& key) const
 {
 	Node* target = findNode(key);
 	if (target != nullptr)
@@ -128,8 +128,9 @@ T& HashMap<T>::operator[](const std::string& key)
 	}
 	else
 	{
-		insert(key, T());
-		return T();
+		T defaultT = T();
+		insert(key, defaultT);
+		return defaultT;
 	}
 }
 
@@ -188,7 +189,7 @@ void HashMap<T>::deleteLinkedList(Node* head)
 }
 
 template <typename T>
-typename HashMap<T>::Node* HashMap<T>::findNode(const std::string& key)
+typename HashMap<T>::Node* HashMap<T>::findNode(const std::string& key) const
 {
 	size_t hashedKey = std::hash<std::string>()(key) % m_mapSize;
 	for (Node* tPtr = (*m_hashmap)[hashedKey]; tPtr != nullptr; tPtr = tPtr->next)

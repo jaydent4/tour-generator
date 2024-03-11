@@ -8,6 +8,7 @@
 
 #include "base_classes.h"
 #include "HashMap.h"
+#include "geotools.h"
 
 class GeoDatabase : public GeoDatabaseBase
 {
@@ -15,22 +16,14 @@ public:
 	GeoDatabase();
 	virtual ~GeoDatabase();
 	virtual bool load(const std::string& map_data_file);
+	virtual bool get_poi_location(const std::string& poi, GeoPoint& point) const;
 	virtual std::vector<GeoPoint> get_connected_points(const GeoPoint& pt) const;
 	virtual std::string get_street_name(const GeoPoint& pt1, const GeoPoint& pt2) const;
 private:
-	struct Segment
-	{
-		Segment(GeoPoint s, GeoPoint e)
-		{
-			start = s;
-			end = e;
-			m_numStops = 0;
-		}
-		GeoPoint start;
-		GeoPoint end;
-		int m_numStops;
-	};
-	HashMap<std::vector<Segment>> m_map;
+	HashMap<GeoPoint> m_poi_locations;
+	HashMap<std::vector<GeoPoint>> m_connected_points;
+	HashMap<std::string> m_streets;
+	string convertToSegment(const GeoPoint& s, const GeoPoint& e) const;
 };
 
 
