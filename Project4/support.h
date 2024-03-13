@@ -6,14 +6,15 @@
 
 struct vertex
 {
-	vertex(GeoPoint start, GeoPoint current, GeoPoint end)
+	vertex(double newgs, GeoPoint current, GeoPoint end)
 		: gp(current)
 	{
-		gs = distance_earth_km(start, current); // Distance from start to current
+		gs = newgs; // Distance from start to current
 		hs = distance_earth_km(current, end); // Distance from current to end
 		fs = gs + hs; // cost of traversing to a vertext
 	}
-	const GeoPoint gp;
+	vertex(const vertex& other);
+	GeoPoint gp;
 	double gs;
 	double hs;
 	double fs;
@@ -28,7 +29,7 @@ struct compVertex
 {
 	bool operator()(const vertex& vl, const vertex& vr) const
 	{
-		return (vl.fs > vr.fs);
+		return (vl > vr);
 	}
 };
 

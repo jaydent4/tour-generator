@@ -1,13 +1,20 @@
 #include "support.h"
 
+vertex::vertex(const vertex& other)
+	: gp(other.getGeoPoint())
+{
+	gs = other.gs;
+	hs = other.hs;
+	fs = other.gs + other.hs;
+}
 
 bool vertex::operator>(const vertex& other) const
 {
-	return (this->hs > other.hs);
+	return (this->fs > other.fs);
 }
 bool vertex::operator<(const vertex& other) const
 {
-	return (this->hs < other.hs);
+	return (this->fs < other.fs);
 }
 bool vertex::operator==(const vertex& other) const
 {

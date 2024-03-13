@@ -100,10 +100,10 @@ int main()
 	//string streetn = test.get_street_name(p1, p2);
 	//std::cout << streetn;
 
-	//GeoPoint cp1("4", "5");
+	//GeoPoint cp1("1", "1");
 	//GeoPoint cp2("6", "2");
 	//GeoPoint mid = midpoint(cp1, cp2);
-	//std::vector<GeoPoint> gp = test.get_connected_points(mid);
+	//std::vector<GeoPoint> gp = test.get_connected_points(cp1);
 	//for (int i = 0; i < gp.size(); i++)
 	//{
 	//	std::cout << gp[i].sLatitude << " " << gp[i].sLongitude << endl;
@@ -111,8 +111,8 @@ int main()
 
 	Router r(test);
 	std::vector<GeoPoint> p = r.route(GeoPoint("1", "1"), GeoPoint("7", "7"));
-	for (int i = 0; i < p.size(); i++)
-	{
-		std::cout << p[i].to_string() << endl;
-	}
+	//for (int i = 0; i < p.size(); i++)
+	//{
+	//	std::cout << p[i].to_string() << endl;
+	//}
 }

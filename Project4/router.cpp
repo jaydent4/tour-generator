@@ -9,77 +9,73 @@ Router::~Router()
 
 std::vector<GeoPoint> Router::route(const GeoPoint& pt1, const GeoPoint& pt2) const
 {
+	std::vector<GeoPoint> path;
 	HashMap<GeoPoint> parent;
 	std::priority_queue<vertex, std::vector<vertex>, compVertex> nextVertex;
-	std::set<vertex> visiting;
-	std::set<vertex> visited;
-	std::vector<GeoPoint> path;
+	HashMap<bool> visited;
 
-	vertex s = vertex(pt1, pt1, pt2);
-	vertex e = vertex(pt1, pt2, pt2);
-	if (s.fs == 0) // start is already at the end
+	vertex start = vertex(0, pt1, pt2);
+	vertex end = vertex(999, pt2, pt2);
+
+	if (start.fs == 0) // start is the same GeoPoint as the end
 	{
-		std::cerr << "START IS END" << endl;
 		return path;
 	}
-	nextVertex.push(s);
-	visiting.insert(s);
 
-	while (!visiting.empty())
+	nextVertex.push(start);
+	visited.insert(start.getGeoPoint().to_string(), true);
+
+	while (!nextVertex.empty())
 	{
-		vertex curr = nextVertex.top();
-		nextVertex.pop();
-		visiting.erase(curr);
-		visited.insert(curr);
-
-		if (curr.fs == 0)
+		std::priority_queue<vertex, std::vector<vertex>, compVertex> copy(nextVertex);
+		std::cout << copy.size() << " | ";
+		for (int i = 0; i <= copy.size(); i++)
 		{
-			std::cout << "PATH IS FOUND" << endl;
-			path.clear();
-			GeoPoint currGP = curr.getGeoPoint();
-			std::cout << currGP.to_string() << " " << pt1.to_string() << endl;
-			std::cout << e.getGeoPoint().to_string() << endl;
-			int i = 0;
-			while (i < 10)
-			{
-				std::cout << "ADDING TO PATH: " << currGP.to_string() << endl;
-				path.push_back(currGP);
-				currGP = parent[currGP.to_string()];
-				i++;
-			}
-			path.push_back(currGP);
-			std::reverse(path.begin(), path.end());
+			std::cout << copy.top().getGeoPoint().to_string() << " | ";
+			copy.pop();
+		}
+		std::cout << endl;
+
+		vertex current = nextVertex.top();
+		nextVertex.pop();
+		std::cout << "CURRENT VERTEX VALUES: gs = " << current.gs << "    hs = " << current.hs << endl;
+
+		GeoPoint currGP = current.getGeoPoint();
+		std::cout << "CURRENT GP: " << currGP.to_string() << endl;
+
+		if (current.hs == 0)
+		{
+			std::cout << "PATH FOUND" << endl;
 			return path;
 		}
-		else
-		{
-			std::cout << "PATH NOT FOUND YET" << endl;
-		}
 
-		std::vector<GeoPoint> adjGP = gdb.get_connected_points(curr.getGeoPoint());
+		std::vector<GeoPoint> adjGP = gdb.get_connected_points(current.getGeoPoint());
 		for (int i = 0; i < adjGP.size(); i++)
 		{
-			vertex adjVertex = vertex(curr.getGeoPoint(), adjGP[i], pt2);
-			if (visited.find(adjVertex) != visited.end())
+			std::cout << "ADJACENT IS: " << adjGP[i].to_string() << endl;
+			if (visited[adjGP[i].to_string()] == false)
 			{
-				std::cout << "ALREADY VISITED: " << adjVertex.getGeoPoint().to_string() << endl;
-				continue;
-			}
-			std::set<vertex>::iterator ptr = visiting.find(adjVertex);
-			if (ptr != visiting.end())
-			{
-				if (adjVertex.gs > (*ptr).gs)
+				double currToAdjDistance = distance_earth_km(currGP, adjGP[i]);
+				vertex adj(current.gs + currToAdjDistance, adjGP[i], pt2);
+				visited.insert(adj.getGeoPoint().to_string(), true);
+				std::cout << adjGP[i].to_string() << " has not been visited" << endl;
+				std::cout << "Pushing " << adj.getGeoPoint().to_string() << " onto priority queue" << endl;
+				nextVertex.push(adj);
+				parent.insert(adjGP[i].to_string(), currGP);
+
+				std::priority_queue<vertex, std::vector<vertex>, compVertex> copy(nextVertex);
+				std::cout << "nextVertex is now: " << copy.size() << " | ";
+				for (int i = 0; i <= copy.size(); i++)
 				{
-					std::cout << "VISITING HAS A BETTER PATH" << endl;
-					continue;
+					std::cout << copy.top().getGeoPoint().to_string() << " | ";
+					copy.pop();
 				}
+				std::cout << endl;
 			}
-			parent.insert(adjVertex.getGeoPoint().to_string(), curr.getGeoPoint());
-			std::cout << "INSERTING parent[" << adjGP[i].to_string() << "] = " << curr.getGeoPoint().to_string() << endl;
-			nextVertex.push(adjVertex);
-			visiting.insert(adjVertex);
+			else
+				std::cout << adjGP[i].to_string() << " has already been visited" << endl;
 		}
 	}
-	std::cerr << "SHOULD NEVER REACH HERE" << endl;
+	std::cout << "ENDING EARLY OR NO SOLUTION" << endl;
 	return path;
 }
