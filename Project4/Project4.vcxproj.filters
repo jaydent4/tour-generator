@@ -42,7 +42,7 @@
     <ClInclude Include="support.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TourGenerator.h">
+    <ClInclude Include="tour_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="support.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tour_generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

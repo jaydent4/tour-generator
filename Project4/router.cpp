@@ -18,6 +18,7 @@ std::vector<GeoPoint> Router::route(const GeoPoint& pt1, const GeoPoint& pt2) co
 
 	if (start->fs == 0)
 	{
+		path.push_back(pt1);
 		delete start;
 		start = nullptr;
 		return path;

@@ -1,4 +1,0 @@
-#ifndef TOURGENERATOR_H
-#define TOURGENERATOR_H
-
-#endif // TOURGENERATOR_H

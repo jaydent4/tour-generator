@@ -31,28 +31,29 @@ bool GeoDatabase::load(const std::string& map_data_file)
 
 	while (getline(infile, streetName))
 	{
-		getline(infile, line);
+		getline(infile, line); // get line with GeoPoints
 		istringstream iss_points(line);
-		iss_points >> slat >> slong >> elat >> elong;
-		GeoPoint start = GeoPoint(slat, slong);
-		GeoPoint end = GeoPoint(elat, elong);
-		segment = convertToSegment(start, end);
-		getline(infile, line);
-		istringstream iss_num_spots(line);
-		iss_num_spots >> numStops;
+		iss_points >> slat >> slong >> elat >> elong; // separate into individual strings
+		GeoPoint start = GeoPoint(slat, slong); // create starting GeoPoint
+		GeoPoint end = GeoPoint(elat, elong); // create ending GeoPoint
+		segment = convertToSegment(start, end); // convert GeoPoints into a segment string
 		m_streets.insert(segment, streetName); // insert into street hashmap
-		vector<GeoPoint>* scpPtr = m_connected_points.find(start.to_string());
-		if (scpPtr != nullptr)
+
+		getline(infile, line); // get line with the number of stops
+		istringstream iss_num_spots(line);
+		iss_num_spots >> numStops; // insert the number of stops
+		vector<GeoPoint>* scpPtr = m_connected_points.find(start.to_string()); // get the connecting points of the start
+		if (scpPtr != nullptr) // if connecting points already exist, push back the end
 		{
 			(*scpPtr).push_back(end);
 		}
-		else
+		else // connecting points do not exist
 		{
-			vector<GeoPoint> sgpv;
-			sgpv.push_back(end);
-			m_connected_points.insert(start.to_string(), sgpv);
+			vector<GeoPoint> sgpv; // create new vector
+			sgpv.push_back(end); // push item into new vector
+			m_connected_points.insert(start.to_string(), sgpv); // insert new vector
 		}
-		std::vector<GeoPoint>* ecpPtr = m_connected_points.find(end.to_string());
+		std::vector<GeoPoint>* ecpPtr = m_connected_points.find(end.to_string()); // get connecting points of the end
 		if (ecpPtr != nullptr)
 		{
 			(*ecpPtr).push_back(start);
@@ -65,55 +66,106 @@ bool GeoDatabase::load(const std::string& map_data_file)
 		}
 		if (numStops != 0)
 		{
-			vector<GeoPoint>* nscpPtr = m_connected_points.find(start.to_string());
-			std::vector<GeoPoint>* necpPtr = m_connected_points.find(end.to_string());
-			GeoPoint mid = midpoint(start, end);
-			string stringMid = mid.to_string();
+			std::vector<GeoPoint>* start_connected = m_connected_points.find(start.to_string()); // start connected vector
+			std::vector<GeoPoint>* end_connected = m_connected_points.find(end.to_string()); // end connected vector
+
+			GeoPoint mid = midpoint(start, end); // compute the midpoint;
+
+			(*start_connected).push_back(mid); // push back mid to both end and start
+			(*end_connected).push_back(mid);
+
+			std::vector<GeoPoint> mid_connected; // create mid connected vector
+			mid_connected.push_back(start);
+			mid_connected.push_back(end);
+
+			std::string start_mid_segment = convertToSegment(start, mid);
+			std::string end_mid_segment = convertToSegment(mid, end);
+
+			m_streets.insert(start_mid_segment, streetName); // make start to mid and end to mid part of a street
+			m_streets.insert(end_mid_segment, streetName);
+
 			for (int i = 0; i < numStops; i++)
 			{
-				string stName;
-				string stgp;
-				string stlat;
-				string stlong;
-				string stSegment;
-				string sptmidSegment = convertToSegment(start, mid);
-				string eptmidSegment = convertToSegment(end, mid);
-
+				std::string stopName; // extract information on stop from file
+				std::string stopGP;
 				getline(infile, line);
 				istringstream stopLine(line);
-				getline(stopLine, stName, '|');
-				getline(stopLine, stgp);
-				istringstream stoplatlong(stgp);
-				stoplatlong >> stlat >> stlong;
-				GeoPoint stop = GeoPoint(stlat, stlong);
-				stSegment = convertToSegment(mid, stop);
-				m_streets.insert(stSegment, "a path");
-				m_streets.insert(sptmidSegment, streetName);
-				m_streets.insert(eptmidSegment, streetName);
-				m_poi_locations.insert(stName, stop);
+				getline(stopLine, stopName, '|');
+				getline(stopLine, stopGP);
+				istringstream stoplatlong(stopGP);
+				std::string stoplat;
+				std::string stoplong;
+				stoplatlong >> stoplat >> stoplong;
+				
+				GeoPoint stop(stoplat, stoplong);
 
-				// Connected Points
-				(*nscpPtr).push_back(mid); // add midpoint to segment begin and end
-				(*necpPtr).push_back(mid);
+				mid_connected.push_back(stop); // connect mid to stop
 
-				vector<GeoPoint> stops;
-				stops.push_back(mid);
-				m_connected_points.insert(stop.to_string(), stops);
+				std::vector<GeoPoint> stop_connected;
+				stop_connected.push_back(mid); // connect stop to mid, mid is the only item
+				m_connected_points.insert(stop.to_string(), stop_connected);
 
-				std::vector<GeoPoint>* mgpv = m_connected_points.find(stringMid);
-				if (mgpv == nullptr)
-				{
-					vector<GeoPoint> connected_mid;
-					connected_mid.push_back(start); // start point
-					connected_mid.push_back(end); // end point
-					connected_mid.push_back(stop); // stop point
-					m_connected_points.insert(stringMid, connected_mid);
-				}
-				else
-				{
-					(*mgpv).push_back(stop); // insert new stop if mid already exists
-				}
+				std::string mid_stop_segment = convertToSegment(mid, stop);
+				m_streets.insert(mid_stop_segment, "a path");
+
+				m_poi_locations.insert(stopName, stop); // insert into POI hashmap
 			}
+
+			m_connected_points.insert(mid.to_string(), mid_connected);
+			//std::vector<GeoPoint>* nscpPtr = m_connected_points.find(start.to_string());
+			//std::vector<GeoPoint>* necpPtr = m_connected_points.find(end.to_string());
+
+			//GeoPoint mid = midpoint(start, end);
+			//string stringMid = mid.to_string();
+			//for (int i = 0; i < numStops; i++)
+			//{
+			//	string stName;
+			//	string stgp;
+			//	string stlat;
+			//	string stlong;
+			//	string stSegment;
+			//	string sptmidSegment = convertToSegment(start, mid);
+			//	string eptmidSegment = convertToSegment(end, mid);
+
+			//	getline(infile, line);
+			//	istringstream stopLine(line);
+			//	getline(stopLine, stName, '|');
+			//	getline(stopLine, stgp);
+			//	istringstream stoplatlong(stgp);
+			//	stoplatlong >> stlat >> stlong;
+			//	GeoPoint stop = GeoPoint(stlat, stlong);
+			//	stSegment = convertToSegment(mid, stop);
+			//	m_streets.insert(stSegment, "a path");
+			//	m_streets.insert(sptmidSegment, streetName);
+			//	m_streets.insert(eptmidSegment, streetName);
+			//	m_poi_locations.insert(stName, stop);
+
+			//	// Connected Points
+			//	if (nscpPtr == nullptr)
+			//		std::cout << "NULLPTR";
+			//	if (necpPtr == nullptr)
+			//		std::cout << "NULLPTR";
+
+			//	(*nscpPtr).push_back(mid); // add midpoint to segment begin and end
+			//	(*necpPtr).push_back(mid);
+
+			//	vector<GeoPoint> stops;
+			//	stops.push_back(mid);
+			//	m_connected_points.insert(stop.to_string(), stops);
+
+			//	std::vector<GeoPoint>* mgpv = m_connected_points.find(stringMid);
+			//	if (mgpv == nullptr)
+			//	{
+			//		vector<GeoPoint> connected_mid;
+			//		connected_mid.push_back(start); // start point
+			//		connected_mid.push_back(end); // end point
+			//		connected_mid.push_back(stop); // stop point
+			//		m_connected_points.insert(stringMid, connected_mid);
+			//	}
+			//	else
+			//	{
+			//		(*mgpv).push_back(stop); // insert new stop if mid already exists
+			//	}
 		}
 	}
 	return true;
