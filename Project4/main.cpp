@@ -110,9 +110,9 @@ int main()
 	//}
 
 	Router r(test);
-	std::vector<GeoPoint> p = r.route(GeoPoint("1", "1"), GeoPoint("7", "7"));
-	//for (int i = 0; i < p.size(); i++)
-	//{
-	//	std::cout << p[i].to_string() << endl;
-	//}
+	std::vector<GeoPoint> p = r.route(GeoPoint("1", "1"), GeoPoint("2", "8"));
+	for (int i = 0; i < p.size(); i++)
+	{
+		std::cout << p[i].to_string() << endl;
+	}
 }

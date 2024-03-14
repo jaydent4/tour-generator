@@ -2,9 +2,11 @@
 #define ROUTER_H
 
 #include <set>
+#include <unordered_set>
 #include <queue>
 #include <algorithm>
 #include <string>
+#include <string.h>
 
 #include "base_classes.h"
 #include "HashMap.h"
