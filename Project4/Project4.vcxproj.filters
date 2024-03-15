@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HashMap.h">
+    <ClInclude Include="hashmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="base_classes.h">
@@ -39,9 +39,6 @@
     <ClInclude Include="router.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="support.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tour_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="router.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="support.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tour_generator.cpp">

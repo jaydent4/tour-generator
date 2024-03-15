@@ -1,0 +1,7 @@
+GeoDatabase:
+load(): O(LS), where L is the number of locations and S is the average number of stops per location
+get_connected_points(): O(P), where P is the number of points connected to the given point 
+get_street_name(): O(1), constant time
+
+Router:
+route(): Used A*, I used a priority queue to obtain the vertex with the lowest computed f score and a auxiliary unordered set to track the objects that are considered in the priority queue (priority queue holds pointers to dynamically alloated vertices). The closed list, containing all visited vertices, is also an unordered set of vertices. To keep track of the path, my own hashmap is used.

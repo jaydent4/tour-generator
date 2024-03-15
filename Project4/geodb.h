@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base_classes.h"
-#include "HashMap.h"
+#include "hashmap.h"
 #include "geotools.h"
 
 class GeoDatabase : public GeoDatabaseBase

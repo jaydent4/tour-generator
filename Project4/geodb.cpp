@@ -110,62 +110,7 @@ bool GeoDatabase::load(const std::string& map_data_file)
 
 				m_poi_locations.insert(stopName, stop); // insert into POI hashmap
 			}
-
 			m_connected_points.insert(mid.to_string(), mid_connected);
-			//std::vector<GeoPoint>* nscpPtr = m_connected_points.find(start.to_string());
-			//std::vector<GeoPoint>* necpPtr = m_connected_points.find(end.to_string());
-
-			//GeoPoint mid = midpoint(start, end);
-			//string stringMid = mid.to_string();
-			//for (int i = 0; i < numStops; i++)
-			//{
-			//	string stName;
-			//	string stgp;
-			//	string stlat;
-			//	string stlong;
-			//	string stSegment;
-			//	string sptmidSegment = convertToSegment(start, mid);
-			//	string eptmidSegment = convertToSegment(end, mid);
-
-			//	getline(infile, line);
-			//	istringstream stopLine(line);
-			//	getline(stopLine, stName, '|');
-			//	getline(stopLine, stgp);
-			//	istringstream stoplatlong(stgp);
-			//	stoplatlong >> stlat >> stlong;
-			//	GeoPoint stop = GeoPoint(stlat, stlong);
-			//	stSegment = convertToSegment(mid, stop);
-			//	m_streets.insert(stSegment, "a path");
-			//	m_streets.insert(sptmidSegment, streetName);
-			//	m_streets.insert(eptmidSegment, streetName);
-			//	m_poi_locations.insert(stName, stop);
-
-			//	// Connected Points
-			//	if (nscpPtr == nullptr)
-			//		std::cout << "NULLPTR";
-			//	if (necpPtr == nullptr)
-			//		std::cout << "NULLPTR";
-
-			//	(*nscpPtr).push_back(mid); // add midpoint to segment begin and end
-			//	(*necpPtr).push_back(mid);
-
-			//	vector<GeoPoint> stops;
-			//	stops.push_back(mid);
-			//	m_connected_points.insert(stop.to_string(), stops);
-
-			//	std::vector<GeoPoint>* mgpv = m_connected_points.find(stringMid);
-			//	if (mgpv == nullptr)
-			//	{
-			//		vector<GeoPoint> connected_mid;
-			//		connected_mid.push_back(start); // start point
-			//		connected_mid.push_back(end); // end point
-			//		connected_mid.push_back(stop); // stop point
-			//		m_connected_points.insert(stringMid, connected_mid);
-			//	}
-			//	else
-			//	{
-			//		(*mgpv).push_back(stop); // insert new stop if mid already exists
-			//	}
 		}
 	}
 	return true;
@@ -173,7 +118,7 @@ bool GeoDatabase::load(const std::string& map_data_file)
 
 bool GeoDatabase::get_poi_location(const std::string& poi, GeoPoint& point) const
 {
-	GeoPoint* poipt = m_poi_locations.find(poi);
+	const GeoPoint* poipt = m_poi_locations.find(poi);
 	if (poipt != nullptr)
 	{
 		point = *poipt;
@@ -185,7 +130,7 @@ bool GeoDatabase::get_poi_location(const std::string& poi, GeoPoint& point) cons
 std::vector<GeoPoint> GeoDatabase::get_connected_points(const GeoPoint& pt) const
 {
 	string stringpt = pt.to_string();
-	std::vector<GeoPoint>* g = m_connected_points.find(stringpt);
+	const std::vector<GeoPoint>* g = m_connected_points.find(stringpt);
 	if (g == nullptr)
 	{
 		std::vector<GeoPoint> s;
@@ -204,8 +149,8 @@ std::string GeoDatabase::get_street_name(const GeoPoint& pt1, const GeoPoint& pt
 	string segment1 = convertToSegment(pt1, pt2);
 	string segment2 = convertToSegment(pt2, pt1);
 	string street = "";
-	std::string* streetPtr1 = m_streets.find(segment1);
-	std::string* streetPtr2 = m_streets.find(segment2);
+	const std::string* streetPtr1 = m_streets.find(segment1);
+	const std::string* streetPtr2 = m_streets.find(segment2);
 	if (streetPtr1 != nullptr)
 	{
 		street = *streetPtr1;

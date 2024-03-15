@@ -5,36 +5,7 @@
 #include "geotools.h"
 #include <string>
 
-struct Vertex
-{
-	Vertex(double g, double h, GeoPoint pt);
-	double gs; // distance of path
-	double hs; // distance from end
-	double fs; // gs + hs
-	GeoPoint gp;
-	bool operator==(const Vertex& other);
-};
 
-struct compareVertex
-{
-	bool operator()(const Vertex* vl, const Vertex* vr);
-};
-
-struct VertexHash
-{
-	size_t operator()(const Vertex& vertex) const
-	{
-		return std::hash<std::string>()(vertex.gp.to_string());
-	}
-};
-
-struct VertexEqual
-{
-	bool operator()(const Vertex& v1, const Vertex& v2) const
-	{
-		return ((v1.gp.latitude == v2.gp.latitude) && (v1.gp.longitude == v2.gp.longitude));
-	}
-};
 
 //struct vertex
 //{

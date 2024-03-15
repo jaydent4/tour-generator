@@ -15,7 +15,7 @@ class TourGenerator : public TourGeneratorBase
 public:
 	TourGenerator(const GeoDatabaseBase& geodb, const RouterBase& router);
 	virtual ~TourGenerator();
-	virtual std::vector<TourCommand> generate_tour(const Stops& stops) const;
+	virtual std::vector<TourCommand> generate_tour(const Stops& stops) const; // generates a list of commands for the tour
 private:
 	const GeoDatabaseBase& gdb;
 	const RouterBase& rtr;

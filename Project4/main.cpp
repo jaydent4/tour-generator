@@ -98,16 +98,16 @@ int main(int argc, char *argv[])
 //    //    std::cout << con[i].to_string() << endl;
 //    //}
 //
-// /*   Router router(geodb);
-//    GeoPoint pt1("34.0630614", "-118.4468781");
-//    GeoPoint pt2("34.0614911", "-118.4464410");
-//    std::vector<GeoPoint> path = router.route(pt1, pt2);
-//    for (int i = 0; i < path.size(); i++)
-//    {
-//        std::cout << path[i].to_string() << endl;
-//    }*/
-//    //TourGenerator tg(geodb, router);
-//    //Stops stops;
-//    //stops.load("stops.txt");
-//    //tg.generate_tour(stops);
+//    Router router(geodb);
+//    //GeoPoint pt1("34.0630614", "-118.4468781");
+//    //GeoPoint pt2("34.0614911", "-118.4464410");
+//    //std::vector<GeoPoint> path = router.route(pt1, pt2);
+//    //for (int i = 0; i < path.size(); i++)
+//    //{
+//    //    std::cout << path[i].to_string() << endl;
+//    //}
+//    TourGenerator tg(geodb, router);
+//    Stops stops;
+//    stops.load("stops.txt");
+//    tg.generate_tour(stops);
 //}
